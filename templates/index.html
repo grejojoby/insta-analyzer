@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta Analyzer</title>
+</head>
+<body>
+    <h1>Hi, {{ username }}</h1>
+    {% if userStats %}
+    <!-- <img src="{{ userStats['profile_pic'] }}" style="height: 100px;width: 100px;" alt=""> -->
+    <table>
+        <tr>
+            <th>Followers</th>
+            <td>{{ userStats['followers_count'] }}</td>
+        </tr>
+        <tr>
+            <th>Followed</th>
+            <td>{{ userStats['followed_count'] }}</td>
+        </tr>
+        <tr>
+            <th>Private</th>
+            <td>{{ userStats['isPrivate'] }}</td>
+        </tr>
+        <tr>
+            <th>Business</th>
+            <td>{{ userStats['isBusiness'] }}</td>
+        </tr>
+    </table>
+    {% endif%}
+</body>
+</html>

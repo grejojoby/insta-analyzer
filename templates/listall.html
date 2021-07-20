@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta Analyzer</title>
+</head>
+
+<body>
+    <h1>All User Stats</h1>
+    {% if allusersstats %}
+
+    <!-- <img src="{{ userStats['profile_pic'] }}" style="height: 100px;width: 100px;" alt=""> -->
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Followers</th>
+            <th>Followed</th>
+            <th>Private</th>
+            <th>Business</th>
+        </tr>
+        {% for user in allusersstats.items() %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.followers_count }}</td>
+            <td>{{ user.followed_count }}</td>
+            <td>{{ user.isPrivate }}</td>
+            <td>{{ user.isBusiness }}</td>
+        </tr>
+
+        {% endfor %}
+        
+    </table>
+    {% endif%}
+</body>
+
+</html>
