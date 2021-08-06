@@ -17,7 +17,6 @@ DATABASE = 'database.db'
 def update_task(conn, task):
     conn.execute("INSERT INTO Info Values {}".format(task))
     conn.commit()
-    print(conn.execute('''SELECT * from Info''').fetchall())
 
 
 
@@ -32,7 +31,14 @@ def ListAll():
     conn = sqlite3.connect('database.db')
     allusersstats =conn.execute('''SELECT * from Info''').fetchall()
     print(allusersstats)
-    return render_template('listall.html', allusersstats=allusersstats)
+    return render_template('listall.html', allusersstats=allusersstats,title="All User Stats")
+
+@app.route("/admin/<username>", methods=['GET'])
+def ListAllUsername(username):
+    conn = sqlite3.connect('database.db')
+    allusersstats =conn.execute('SELECT * from Info').fetchall()
+    allusersstats=[i for i in allusersstats  if i[1]==username ]
+    return render_template('listall.html', allusersstats=allusersstats,title="%s stats"%username)
 
 @app.route('/api/<username>', methods=['GET'])
 def GetInstaStats(username):
@@ -57,8 +63,7 @@ def GetInstaStats(username):
     
 
 if __name__ == "__main__":
-    #uncomment during dev     
-    #os.remove(DATABASE)
+    os.remove(DATABASE)
     conn = sqlite3.connect('database.db')
     conn.execute('''CREATE TABLE Info(date TEXT,username TEXT, followers_count INTEGER, followed_count INTEGER, isPrivate TEXT, isBusiness TEXT)''')
     conn.close()
