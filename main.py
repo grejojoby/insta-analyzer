@@ -1,8 +1,11 @@
+from sqlite3.dbapi2 import DatabaseError
 from flask import Flask, request, render_template
 import instainfo
-
+import os
 import sqlite3
 from sqlite3 import Error
+from datetime import date
+
 
 app = Flask(__name__)
 
@@ -10,27 +13,16 @@ DATABASE = 'database.db'
 # conn = sqlite3.connect('database.db')
 
 
-def create_table(conn, create_table_sql):
-    try:
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Error as e:
-        print(e)
 
 def update_task(conn, task):
-    sql = ''' UPDATE userstats
-              SET profile_pic = ? ,
-                  followers_count = ? ,
-                  followed_count = ? ,
-                  isPrivate = ? ,
-                  isBusiness = ? 
-              WHERE username = ?'''
-    conn = sqlite3.connect('database.db')
-    cur = conn.cursor()
-    cur.execute(sql, task)
+    conn.execute("INSERT INTO Info Values {}".format(task))
     conn.commit()
+    print(conn.execute('''SELECT * from Info''').fetchall())
 
 
+
+  
+# update_task()
 @app.route("/", methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
@@ -38,14 +30,13 @@ def index():
 @app.route("/admin/all", methods=['GET'])
 def ListAll():
     conn = sqlite3.connect('database.db')
-    conn.cursor.execute('''SELECT * from userstats''')
-    allusersstats = conn.cursor.fetchall()
+    allusersstats =conn.execute('''SELECT * from Info''').fetchall()
+    print(allusersstats)
     return render_template('listall.html', allusersstats=allusersstats)
 
 @app.route('/api/<username>', methods=['GET'])
 def GetInstaStats(username):
     # Create an instance of the class
-    print(username)
     userObj = instainfo.UserProfile(username)
     # Prints the users profile picture URL
     userStats = {   
@@ -56,9 +47,9 @@ def GetInstaStats(username):
         'isBusiness': userObj.IsBusinessAccount()
 
     }
-    # conn = sqlite3.connect('database.db')
-
-    # update_task(conn, (str(userStats['profile_pic']),int(userStats['followers_count']),int(userStats['followed_count']),str(userStats['isPrivate']),str(userStats['isBusiness']),str(username)))
+    conn = sqlite3.connect('database.db')
+    today = date.today()
+    update_task(conn, (str(today),username,int(userStats['followers_count']),int(userStats['followed_count']),str(userStats['isPrivate']),str(userStats['isBusiness'])))
     
     return render_template('index.html', userStats=userStats, username=username)
 
@@ -66,24 +57,9 @@ def GetInstaStats(username):
     
 
 if __name__ == "__main__":
-    try:
-        conn = sqlite3.connect('database.db')
-        sql_create_userStats_table = """ CREATE TABLE IF NOT EXISTS userstats (
-                                        username text PRIMARY KEY,
-                                        profile_pic text NOT NULL,
-                                        followers_count integer NOT NULL,
-                                        followed_count integer NOT NULL,
-                                        isPrivate text,    
-                                        isBusiness text
-                                    ); """
-        if conn is not None:
-        # create projects table
-            create_table(conn, sql_create_userStats_table)
-        else:
-            print("Error! cannot create the database connection.")
-
-    except Error as e:
-        print(e)
-
-    # conn = sqlite3.connect('database.db')
+    #uncomment during dev     
+    #os.remove(DATABASE)
+    conn = sqlite3.connect('database.db')
+    conn.execute('''CREATE TABLE Info(date TEXT,username TEXT, followers_count INTEGER, followed_count INTEGER, isPrivate TEXT, isBusiness TEXT)''')
+    conn.close()
     app.run(debug=True)
