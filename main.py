@@ -4,6 +4,8 @@ import instainfo
 import os
 import sqlite3
 from sqlite3 import Error
+from datetime import date
+
 
 app = Flask(__name__)
 
@@ -46,8 +48,8 @@ def GetInstaStats(username):
 
     }
     conn = sqlite3.connect('database.db')
-
-    update_task(conn, (username,int(userStats['followers_count']),int(userStats['followed_count']),str(userStats['isPrivate']),str(userStats['isBusiness'])))
+    today = date.today()
+    update_task(conn, (str(today),username,int(userStats['followers_count']),int(userStats['followed_count']),str(userStats['isPrivate']),str(userStats['isBusiness'])))
     
     return render_template('index.html', userStats=userStats, username=username)
 
@@ -55,8 +57,9 @@ def GetInstaStats(username):
     
 
 if __name__ == "__main__":
-    os.remove(DATABASE)
+    #uncomment during dev     
+    #os.remove(DATABASE)
     conn = sqlite3.connect('database.db')
-    conn.execute('''CREATE TABLE Info(username TEXT, followers_count INTEGER, followed_count INTEGER, isPrivate TEXT, isBusiness TEXT)''')
+    conn.execute('''CREATE TABLE Info(date TEXT,username TEXT, followers_count INTEGER, followed_count INTEGER, isPrivate TEXT, isBusiness TEXT)''')
     conn.close()
     app.run(debug=True)
