@@ -18,8 +18,6 @@ def update_task(conn, task):
     conn.execute("INSERT INTO Info Values {}".format(task))
     conn.commit()
 
-
-
   
 # update_task()
 @app.route("/", methods=['GET', 'POST'])
@@ -63,8 +61,8 @@ def GetInstaStats(username):
     
 
 if __name__ == "__main__":
-    os.remove(DATABASE)
+    # os.remove(DATABASE)
     conn = sqlite3.connect('database.db')
-    conn.execute('''CREATE TABLE Info(date TEXT,username TEXT, followers_count INTEGER, followed_count INTEGER, isPrivate TEXT, isBusiness TEXT)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS Info(date TEXT,username TEXT, followers_count INTEGER, followed_count INTEGER, isPrivate TEXT, isBusiness TEXT)''')
     conn.close()
     app.run(debug=True)
